@@ -10,10 +10,9 @@ router.post('/login', (req, res) => {
     const sessionPayload = JSON.stringify({ user: 'admin', timestamp: Date.now() });
     const encryptedSession = encryptText(sessionPayload);
 
-    // Set a cookie that expires in 1 day
+    // Set a session-only cookie
     res.cookie('admin_session', encryptedSession, {
-      httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000 // 1 day
+      httpOnly: true
     });
     return res.json({ success: true, message: 'Logged in successfully' });
   }

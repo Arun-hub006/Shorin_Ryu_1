@@ -6,7 +6,9 @@ const connectDB = async () => {
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error(`Database connection error: ${error.message}`);
-    process.exit(1);
+    // Do not call process.exit(1) to avoid crashing the server process.
+    // This allows the server to start successfully and serve static content
+    // while Mongoose handles connection buffering and retries.
   }
 };
 

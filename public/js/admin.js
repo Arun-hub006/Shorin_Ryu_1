@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
   // --- STATE ---
-  let currentTab = 'dashboard';
+  let currentTab = 'masters';
   let currentAction = 'add'; // 'add' or 'edit'
   let activeId = null; // ID of master/blackbelt/dojo being edited
   let unreadRegCount = 0;
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --- INITIAL CHECK & SETUP ---
-  checkAuth();
+  showLogin();
   setupTabRouting();
   setupFormListeners();
   setupImagePreviewListeners();
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function showDashboard() {
     loginOverlay.style.display = 'none';
     dashboardWrapper.style.display = 'flex';
-    initDashboardData();
+    switchTab(currentTab);
   }
 
   function showLogin() {
@@ -152,8 +152,8 @@ document.addEventListener('DOMContentLoaded', () => {
     closeFormDrawer('dojos');
 
     // Update Header titles
-    let title = 'Dashboard';
-    let breadcrumb = 'Dashboard > Main';
+    let title = 'Masters Management';
+    let breadcrumb = 'Dashboard > Masters';
 
     if (tabName === 'masters') {
       title = 'Masters Management';
@@ -174,8 +174,6 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (tabName === 'profile') {
       title = 'Admin Profile';
       breadcrumb = 'Dashboard > Profile';
-    } else if (tabName === 'dashboard') {
-      initDashboardData();
     }
 
     pageTitle.textContent = title;
@@ -191,6 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // GLOBAL EXPORTS to allow html onClick calls
+  window.switchTab = switchTab;
   window.showFormDrawer = function(type, mode = 'add', id = null) {
     currentAction = mode;
     activeId = id;
@@ -372,13 +371,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (response.ok) {
         closeFormDrawer(type);
         // Refresh appropriate lists
-        if (currentTab === 'dashboard') {
-          initDashboardData();
-        } else {
-          if (type === 'masters') fetchMastersData();
-          if (type === 'blackbelts') fetchBlackBeltsData();
-          if (type === 'dojos') fetchDojosData();
-        }
+        if (type === 'masters') fetchMastersData();
+        if (type === 'blackbelts') fetchBlackBeltsData();
+        if (type === 'dojos') fetchDojosData();
       } else {
         const errorData = await response.json();
         alert(`Error saving ${type}: ` + (errorData.message || 'Server error'));
@@ -401,14 +396,10 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       if (response.ok) {
-        if (currentTab === 'dashboard') {
-          initDashboardData();
-        } else {
-          if (type === 'masters') fetchMastersData();
-          if (type === 'blackbelts') fetchBlackBeltsData();
-          if (type === 'dojos') fetchDojosData();
-          if (type === 'registrations') fetchRegistrationsData();
-        }
+        if (type === 'masters') fetchMastersData();
+        if (type === 'blackbelts') fetchBlackBeltsData();
+        if (type === 'dojos') fetchDojosData();
+        if (type === 'registrations') fetchRegistrationsData();
       } else {
         const err = await response.json();
         alert('Delete failed: ' + err.message);
@@ -506,9 +497,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <td>${m.experience}</td>
             <td>
               <div class="btn-action-row">
-                <button class="btn-icon-action edit" onclick="showFormDrawer('masters', 'edit', '${m._id}')"><i class="fa-solid fa-pen"></i></button>
-                <button class="btn-icon-action view" onclick="viewDetails('masters', '${m._id}')"><i class="fa-solid fa-eye"></i></button>
-                <button class="btn-icon-action delete" onclick="deleteItem('masters', '${m._id}')"><i class="fa-solid fa-trash"></i></button>
+                <button class="btn-icon-action view" onclick="viewDetails('masters', '${m._id}')" title="View Details"><i class="fa-solid fa-eye"></i></button>
               </div>
             </td>
           </tr>
@@ -561,9 +550,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <td>${bb.experience}</td>
             <td>
               <div class="btn-action-row">
-                <button class="btn-icon-action edit" onclick="showFormDrawer('blackbelts', 'edit', '${bb._id}')"><i class="fa-solid fa-pen"></i></button>
-                <button class="btn-icon-action view" onclick="viewDetails('blackbelts', '${bb._id}')"><i class="fa-solid fa-eye"></i></button>
-                <button class="btn-icon-action delete" onclick="deleteItem('blackbelts', '${bb._id}')"><i class="fa-solid fa-trash"></i></button>
+                <button class="btn-icon-action view" onclick="viewDetails('blackbelts', '${bb._id}')" title="View Details"><i class="fa-solid fa-eye"></i></button>
               </div>
             </td>
           </tr>
@@ -615,9 +602,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <td><a href="${d.mapUrl}" target="_blank" class="text-red">${d.mapUrl.substring(0, 30)}...</a></td>
             <td>
               <div class="btn-action-row">
-                <button class="btn-icon-action edit" onclick="showFormDrawer('dojos', 'edit', '${d._id}')"><i class="fa-solid fa-pen"></i></button>
-                <button class="btn-icon-action view" onclick="viewDetails('dojos', '${d._id}')"><i class="fa-solid fa-eye"></i></button>
-                <button class="btn-icon-action delete" onclick="deleteItem('dojos', '${d._id}')"><i class="fa-solid fa-trash"></i></button>
+                <button class="btn-icon-action view" onclick="viewDetails('dojos', '${d._id}')" title="View Details"><i class="fa-solid fa-eye"></i></button>
               </div>
             </td>
           </tr>

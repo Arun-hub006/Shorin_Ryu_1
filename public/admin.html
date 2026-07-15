@@ -59,19 +59,10 @@
       </div>
 
       <nav class="sidebar-nav">
-        <div class="nav-section-title">MAIN</div>
-        <ul>
-          <li>
-            <a href="#" class="nav-link active" data-tab="dashboard">
-              <i class="fa-solid fa-chart-line"></i> Dashboard
-            </a>
-          </li>
-        </ul>
-
         <div class="nav-section-title">MANAGE</div>
         <ul>
           <li>
-            <a href="#" class="nav-link" data-tab="masters">
+            <a href="#" class="nav-link active" data-tab="masters">
               <i class="fa-solid fa-user-tie"></i> Masters
             </a>
           </li>
@@ -153,118 +144,8 @@
       <!-- Tab Content Area -->
       <div class="tab-content">
         
-        <!-- ==================== DASHBOARD TAB ==================== -->
-        <div id="tab-dashboard" class="tab-pane active">
-          <div class="welcome-banner">
-            <h2>Welcome back, Admin!</h2>
-            <p>Manage your karate school content, registrations and dojo branches from here.</p>
-          </div>
-
-          <!-- Summary Metric Cards -->
-          <div class="metrics-row">
-            <div class="metric-card card-red">
-              <div class="metric-icon"><i class="fa-solid fa-user-tie"></i></div>
-              <div class="metric-info">
-                <span class="metric-value" id="dashboard-masters-count">0</span>
-                <span class="metric-label">Masters</span>
-              </div>
-            </div>
-            <div class="metric-card card-black">
-              <div class="metric-icon"><i class="fa-solid fa-user-shield"></i></div>
-              <div class="metric-info">
-                <span class="metric-value" id="dashboard-bb-count">0</span>
-                <span class="metric-label">Black Belts</span>
-              </div>
-            </div>
-            <div class="metric-card card-dojo">
-              <div class="metric-icon"><i class="fa-solid fa-location-dot"></i></div>
-              <div class="metric-info">
-                <span class="metric-value" id="dashboard-dojo-count">0</span>
-                <span class="metric-label">Dojo Locations</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Quick Preview Panels -->
-          <div class="dashboard-previews">
-            <!-- Masters Preview -->
-            <div class="preview-panel">
-              <div class="panel-header">
-                <h3>Masters Management</h3>
-                <button class="btn btn-primary btn-sm" onclick="showFormDrawer('masters')"><i class="fa-solid fa-plus"></i> Add Master</button>
-              </div>
-              <div class="table-responsive">
-                <table class="admin-table">
-                  <thead>
-                    <tr>
-                      <th>Image</th>
-                      <th>Name</th>
-                      <th>Designation</th>
-                      <th>Dan</th>
-                      <th>Experience</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody id="preview-masters-tbody">
-                    <!-- Loaded dynamically -->
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <!-- Black Belts Preview -->
-            <div class="preview-panel">
-              <div class="panel-header">
-                <h3>Black Belts Management</h3>
-                <button class="btn btn-primary btn-sm" onclick="showFormDrawer('blackbelts')"><i class="fa-solid fa-plus"></i> Add Black Belt</button>
-              </div>
-              <div class="table-responsive">
-                <table class="admin-table">
-                  <thead>
-                    <tr>
-                      <th>Image</th>
-                      <th>Name</th>
-                      <th>Dan</th>
-                      <th>Specialization</th>
-                      <th>Experience</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody id="preview-blackbelts-tbody">
-                    <!-- Loaded dynamically -->
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <!-- Dojo Locations Preview -->
-            <div class="preview-panel">
-              <div class="panel-header">
-                <h3>Dojo Locations Management</h3>
-                <button class="btn btn-primary btn-sm" onclick="showFormDrawer('dojos')"><i class="fa-solid fa-plus"></i> Add Dojo Location</button>
-              </div>
-              <div class="table-responsive">
-                <table class="admin-table">
-                  <thead>
-                    <tr>
-                      <th>Location Name</th>
-                      <th>Address</th>
-                      <th>Contact Number</th>
-                      <th>Map URL</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody id="preview-dojos-tbody">
-                    <!-- Loaded dynamically -->
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <!-- ==================== MASTERS TAB ==================== -->
-        <div id="tab-masters" class="tab-pane">
+        <div id="tab-masters" class="tab-pane active">
           <div class="split-layout">
             <!-- Left Pane: List Table -->
             <div class="main-panel">

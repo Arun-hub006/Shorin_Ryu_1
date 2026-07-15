@@ -70,10 +70,46 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Helper to show premium loading spinner
+  function showLoading(container, message = 'Loading...') {
+    container.innerHTML = `
+      <div class="loading-container">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">${message}</div>
+      </div>
+    `;
+  }
+
+  // Helper to show custom error message with retry button
+  function showErrorMessage(container, message, retryCallback) {
+    container.innerHTML = '';
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-container';
+
+    const icon = document.createElement('i');
+    icon.className = 'fa-solid fa-circle-exclamation error-icon';
+    errorDiv.appendChild(icon);
+
+    const msg = document.createElement('p');
+    msg.className = 'error-message';
+    msg.textContent = message;
+    errorDiv.appendChild(msg);
+
+    const btn = document.createElement('button');
+    btn.className = 'btn-retry';
+    btn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Retry';
+    btn.addEventListener('click', retryCallback);
+    errorDiv.appendChild(btn);
+
+    container.appendChild(errorDiv);
+  }
+
   // Fetch and Render Masters
   async function fetchMasters() {
+    showLoading(mastersContainer, 'Loading Masters...');
     try {
       const response = await fetch('/api/masters');
+      if (!response.ok) throw new Error('Failed to fetch masters');
       const masters = await response.json();
       
       if (masters.length === 0) {
@@ -96,14 +132,16 @@ document.addEventListener('DOMContentLoaded', () => {
       `).join('');
     } catch (error) {
       console.error('Error fetching masters:', error);
-      mastersContainer.innerHTML = '<p class="text-center text-red" style="grid-column: 1/-1;">Error loading masters.</p>';
+      showErrorMessage(mastersContainer, 'Unable to load masters at the moment. Please try again.', fetchMasters);
     }
   }
 
   // Fetch and Render Black Belts
   async function fetchBlackBelts() {
+    showLoading(blackbeltsContainer, 'Loading Black Belts...');
     try {
       const response = await fetch('/api/blackbelts');
+      if (!response.ok) throw new Error('Failed to fetch black belts');
       const blackbelts = await response.json();
 
       if (blackbelts.length === 0) {
@@ -126,14 +164,16 @@ document.addEventListener('DOMContentLoaded', () => {
       `).join('');
     } catch (error) {
       console.error('Error fetching black belts:', error);
-      blackbeltsContainer.innerHTML = '<p class="text-center text-red" style="grid-column: 1/-1;">Error loading black belts.</p>';
+      showErrorMessage(blackbeltsContainer, 'Unable to load black belts at the moment. Please try again.', fetchBlackBelts);
     }
   }
 
   // Fetch and Render Dojo Locations
   async function fetchDojos() {
+    showLoading(dojosListContainer, 'Searching Dojos...');
     try {
       const response = await fetch('/api/dojos');
+      if (!response.ok) throw new Error('Failed to fetch dojos');
       const dojos = await response.json();
 
       // Update stat count
@@ -194,7 +234,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     } catch (error) {
       console.error('Error fetching dojos:', error);
-      dojosListContainer.innerHTML = '<p class="text-red">Error loading dojo locations.</p>';
+      showErrorMessage(dojosListContainer, 'Unable to load dojo locations. Please try again.', fetchDojos);
+      googleMapContainer.innerHTML = `
+        <div class="map-placeholder">
+          <i class="fa-solid fa-triangle-exclamation text-red" style="font-size: 40px; margin-bottom: 15px;"></i>
+          <p>Map unavailable due to server connection issues</p>
+        </div>
+      `;
     }
   }
 
