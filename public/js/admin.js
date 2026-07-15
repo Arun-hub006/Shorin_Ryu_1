@@ -80,10 +80,12 @@ document.addEventListener('DOMContentLoaded', () => {
         showDashboard();
         loginForm.reset();
       } else {
+        loginError.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${data.message || 'Invalid admin credentials!'}`;
         loginError.style.display = 'block';
       }
     } catch (err) {
       console.error('Login error:', err);
+      loginError.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Network or server error. Please try again.`;
       loginError.style.display = 'block';
     }
   });
