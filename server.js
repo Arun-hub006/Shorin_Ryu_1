@@ -16,27 +16,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Ensure database connection is fully established before processing any request (Crucial for Vercel/serverless environments)
-app.use(async (req, res, next) => {
-  try {
-    await connectDB();
-    next();
-  } catch (error) {
-    console.error('Database connection middleware failed:', error.message);
-    res.status(500).json({ success: false, message: 'Database connection failed', error: error.message });
-  }
-});
-
 // Serve Static Files
 app.use(express.static(path.join(__dirname, 'public')));
-
-// Mount Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/masters', masterRoutes);
-app.use('/api/blackbelts', blackbeltRoutes);
-app.use('/api/dojos', dojoRoutes);
-app.use('/api/registrations', registrationRoutes);
-app.use('/api/images', imageRoutes);
 
 // HTML Fallbacks for direct navigation if needed
 app.get('/admin', (req, res) => {
@@ -46,6 +27,25 @@ app.get('/admin', (req, res) => {
 app.get('/register', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'register.html'));
 });
+
+// Ensure database connection is fully established before processing API requests (Crucial for Vercel/serverless environments)
+app.use('/api', async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    console.error('Database connection middleware failed:', error.message);
+    res.status(500).json({ success: false, message: 'Database connection failed', error: error.message });
+  }
+});
+
+// Mount Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/masters', masterRoutes);
+app.use('/api/blackbelts', blackbeltRoutes);
+app.use('/api/dojos', dojoRoutes);
+app.use('/api/registrations', registrationRoutes);
+app.use('/api/images', imageRoutes);
 
 // Seed Initial Data Endpoint (For development ease)
 app.post('/api/seed', async (req, res) => {
