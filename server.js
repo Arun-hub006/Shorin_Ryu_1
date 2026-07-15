@@ -9,15 +9,23 @@ const dojoRoutes = require('./routes/dojos');
 const registrationRoutes = require('./routes/registrations');
 const imageRoutes = require('./routes/images');
 
-// Initialize database
-connectDB();
-
 const app = express();
 
 // Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+// Ensure database connection is fully established before processing any request (Crucial for Vercel/serverless environments)
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    console.error('Database connection middleware failed:', error.message);
+    res.status(500).json({ success: false, message: 'Database connection failed', error: error.message });
+  }
+});
 
 // Serve Static Files
 app.use(express.static(path.join(__dirname, 'public')));
