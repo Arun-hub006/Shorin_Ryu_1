@@ -484,10 +484,12 @@ img {
   position: relative;
   z-index: 2;
   filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 20px rgba(var(--primary-rgb), 0.25));
-  max-height: 520px;
-  object-fit: contain;
+  width: 100%;
+  max-width: 480px;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: cover;
   border-radius: 50%; /* Crops out the white corners from the JPG */
-  transform: scale(1.7); /* Zoomed in more for optimal visibility */
 }
 
 .kanji-watermark {
