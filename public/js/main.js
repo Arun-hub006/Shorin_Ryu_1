@@ -35,6 +35,41 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Mobile Nav Toggle
+  const mobileNavToggle = document.getElementById('mobile-nav-toggle');
+  const mainNav = document.querySelector('.main-nav');
+
+  if (mobileNavToggle && mainNav) {
+    mobileNavToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      mainNav.classList.toggle('active');
+      const icon = mobileNavToggle.querySelector('i');
+      if (mainNav.classList.contains('active')) {
+        icon.className = 'fa-solid fa-xmark';
+      } else {
+        icon.className = 'fa-solid fa-bars';
+      }
+    });
+
+    // Close mobile nav when clicking a link
+    navLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        mainNav.classList.remove('active');
+        const icon = mobileNavToggle.querySelector('i');
+        icon.className = 'fa-solid fa-bars';
+      });
+    });
+
+    // Close mobile nav when clicking anywhere else
+    document.addEventListener('click', (e) => {
+      if (!mainNav.contains(e.target) && !mobileNavToggle.contains(e.target)) {
+        mainNav.classList.remove('active');
+        const icon = mobileNavToggle.querySelector('i');
+        icon.className = 'fa-solid fa-bars';
+      }
+    });
+  }
+
   // Fetch and Render Masters
   async function fetchMasters() {
     try {

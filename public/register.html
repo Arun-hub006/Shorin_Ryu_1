@@ -145,6 +145,26 @@
     .back-home:hover {
       color: var(--text-light);
     }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 576px) {
+      .register-wrapper {
+        padding: 30px 10px;
+      }
+      .register-card {
+        padding: 25px 20px;
+      }
+      .register-title {
+        font-size: 24px;
+      }
+      .form-row {
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -190,7 +210,7 @@
         </div>
 
         <!-- Email & Phone in row -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div class="form-row">
           <div class="form-group">
             <label for="email">Email Address *</label>
             <input type="email" id="email" class="form-control" placeholder="e.g. john@example.com" required>
@@ -202,7 +222,7 @@
         </div>
 
         <!-- Age & Experience Level -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div class="form-row">
           <div class="form-group">
             <label for="age">Age *</label>
             <input type="number" id="age" class="form-control" placeholder="e.g. 15" min="4" max="100" required>

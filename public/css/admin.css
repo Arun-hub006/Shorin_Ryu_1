@@ -1092,3 +1092,15 @@ textarea.form-control {
     grid-template-columns: 1fr;
   }
 }
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+@media (max-width: 576px) {
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+}
