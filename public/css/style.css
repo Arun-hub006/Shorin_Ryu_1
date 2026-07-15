@@ -486,7 +486,8 @@ img {
   filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 20px rgba(var(--primary-rgb), 0.25));
   max-height: 520px;
   object-fit: contain;
-  transform: scale(1.25); /* Zoomed for clear branding visibility */
+  border-radius: 50%; /* Crops out the white corners from the JPG */
+  transform: scale(1.4); /* Zoomed in more for optimal visibility */
 }
 
 .kanji-watermark {
