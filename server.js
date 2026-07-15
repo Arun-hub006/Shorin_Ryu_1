@@ -61,7 +61,7 @@ app.post('/api/seed', async (req, res) => {
         dan: '7th Dan Black Belt',
         experience: '30+ Years',
         bio: 'Over 30 years of experience in traditional karate training, tournament coaching and student development. Dedicated to building discipline, confidence and excellence in every student.',
-        imageUrl: '/assets/sensei_male_1.png'
+        imageUrl: '/assets/massdragon_hd.png'
       },
       {
         name: 'Sensei Anita P.',
