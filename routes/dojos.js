@@ -45,7 +45,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST new dojo location (Protected)
-router.post('/', protect, upload.single('image'), encryptUpload, async (req, res) => {
+router.post('/', protect, upload.single('image'), async (req, res) => {
   try {
     const { name, address, phone, mapUrl, description, latitude, longitude } = req.body;
     
@@ -53,7 +53,8 @@ router.post('/', protect, upload.single('image'), encryptUpload, async (req, res
       return res.status(400).json({ message: 'Dojo image is required' });
     }
 
-    const imageUrl = `/api/images/${req.file.filename}`;
+    const base64Image = req.file.buffer.toString('base64');
+    const imageUrl = `data:${req.file.mimetype};base64,${base64Image}`;
 
     // Compute coords if not explicitly provided
     let finalLat = latitude ? parseFloat(latitude) : null;
@@ -81,12 +82,13 @@ router.post('/', protect, upload.single('image'), encryptUpload, async (req, res
     const savedDojo = await newDojo.save();
     res.status(201).json(savedDojo);
   } catch (error) {
+    console.error('Error creating dojo location:', error);
     res.status(500).json({ message: 'Error creating dojo location', error: error.message });
   }
 });
 
 // PUT update dojo location (Protected)
-router.put('/:id', protect, upload.single('image'), encryptUpload, async (req, res) => {
+router.put('/:id', protect, upload.single('image'), async (req, res) => {
   try {
     const { name, address, phone, mapUrl, description, latitude, longitude } = req.body;
     const dojo = await Dojo.findById(req.params.id);
@@ -97,15 +99,8 @@ router.put('/:id', protect, upload.single('image'), encryptUpload, async (req, r
 
     let imageUrl = dojo.imageUrl;
     if (req.file) {
-      // Delete old image file
-      if (dojo.imageUrl && dojo.imageUrl.startsWith('/api/images/')) {
-        const oldFilename = dojo.imageUrl.split('/').pop();
-        const oldPath = path.join(__dirname, '../uploads', oldFilename);
-        if (fs.existsSync(oldPath)) {
-          fs.unlinkSync(oldPath);
-        }
-      }
-      imageUrl = `/api/images/${req.file.filename}`;
+      const base64Image = req.file.buffer.toString('base64');
+      imageUrl = `data:${req.file.mimetype};base64,${base64Image}`;
     }
 
     // Compute coords if not explicitly provided or mapUrl has changed
@@ -133,6 +128,7 @@ router.put('/:id', protect, upload.single('image'), encryptUpload, async (req, r
     const updatedDojo = await dojo.save();
     res.json(updatedDojo);
   } catch (error) {
+    console.error('Error updating dojo location:', error);
     res.status(500).json({ message: 'Error updating dojo location', error: error.message });
   }
 });
@@ -145,7 +141,7 @@ router.delete('/:id', protect, async (req, res) => {
       return res.status(404).json({ message: 'Dojo location not found' });
     }
 
-    // Delete image file
+    // Delete image file if it exists locally
     if (dojo.imageUrl && dojo.imageUrl.startsWith('/api/images/')) {
       const filename = dojo.imageUrl.split('/').pop();
       const imgPath = path.join(__dirname, '../uploads', filename);
@@ -157,6 +153,7 @@ router.delete('/:id', protect, async (req, res) => {
     await Dojo.findByIdAndDelete(req.params.id);
     res.json({ message: 'Dojo location deleted successfully' });
   } catch (error) {
+    console.error('Error deleting dojo location:', error);
     res.status(500).json({ message: 'Error deleting dojo location', error: error.message });
   }
 });

@@ -30,7 +30,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST new black belt (Protected)
-router.post('/', protect, upload.single('image'), encryptUpload, async (req, res) => {
+router.post('/', protect, upload.single('image'), async (req, res) => {
   try {
     const { name, dan, specialization, experience, bio } = req.body;
     
@@ -38,7 +38,8 @@ router.post('/', protect, upload.single('image'), encryptUpload, async (req, res
       return res.status(400).json({ message: 'Profile image is required' });
     }
 
-    const imageUrl = `/api/images/${req.file.filename}`;
+    const base64Image = req.file.buffer.toString('base64');
+    const imageUrl = `data:${req.file.mimetype};base64,${base64Image}`;
 
     const newBlackBelt = new BlackBelt({
       name,
@@ -52,12 +53,13 @@ router.post('/', protect, upload.single('image'), encryptUpload, async (req, res
     const savedBlackBelt = await newBlackBelt.save();
     res.status(201).json(savedBlackBelt);
   } catch (error) {
+    console.error('Error creating black belt:', error);
     res.status(500).json({ message: 'Error creating black belt', error: error.message });
   }
 });
 
 // PUT update black belt (Protected)
-router.put('/:id', protect, upload.single('image'), encryptUpload, async (req, res) => {
+router.put('/:id', protect, upload.single('image'), async (req, res) => {
   try {
     const { name, dan, specialization, experience, bio } = req.body;
     const blackbelt = await BlackBelt.findById(req.params.id);
@@ -68,15 +70,8 @@ router.put('/:id', protect, upload.single('image'), encryptUpload, async (req, r
 
     let imageUrl = blackbelt.imageUrl;
     if (req.file) {
-      // Delete old image file
-      if (blackbelt.imageUrl && blackbelt.imageUrl.startsWith('/api/images/')) {
-        const oldFilename = blackbelt.imageUrl.split('/').pop();
-        const oldPath = path.join(__dirname, '../uploads', oldFilename);
-        if (fs.existsSync(oldPath)) {
-          fs.unlinkSync(oldPath);
-        }
-      }
-      imageUrl = `/api/images/${req.file.filename}`;
+      const base64Image = req.file.buffer.toString('base64');
+      imageUrl = `data:${req.file.mimetype};base64,${base64Image}`;
     }
 
     blackbelt.name = name || blackbelt.name;
@@ -89,6 +84,7 @@ router.put('/:id', protect, upload.single('image'), encryptUpload, async (req, r
     const updatedBlackBelt = await blackbelt.save();
     res.json(updatedBlackBelt);
   } catch (error) {
+    console.error('Error updating black belt:', error);
     res.status(500).json({ message: 'Error updating black belt', error: error.message });
   }
 });
@@ -101,7 +97,7 @@ router.delete('/:id', protect, async (req, res) => {
       return res.status(404).json({ message: 'Black belt not found' });
     }
 
-    // Delete image file
+    // Delete image file if it exists locally
     if (blackbelt.imageUrl && blackbelt.imageUrl.startsWith('/api/images/')) {
       const filename = blackbelt.imageUrl.split('/').pop();
       const imgPath = path.join(__dirname, '../uploads', filename);
@@ -113,6 +109,7 @@ router.delete('/:id', protect, async (req, res) => {
     await BlackBelt.findByIdAndDelete(req.params.id);
     res.json({ message: 'Black belt deleted successfully' });
   } catch (error) {
+    console.error('Error deleting black belt:', error);
     res.status(500).json({ message: 'Error deleting black belt', error: error.message });
   }
 });

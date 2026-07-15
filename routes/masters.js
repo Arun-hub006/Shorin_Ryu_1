@@ -30,7 +30,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST new master (Protected)
-router.post('/', protect, upload.single('image'), encryptUpload, async (req, res) => {
+router.post('/', protect, upload.single('image'), async (req, res) => {
   try {
     const { name, designation, dan, experience, bio } = req.body;
     
@@ -38,7 +38,8 @@ router.post('/', protect, upload.single('image'), encryptUpload, async (req, res
       return res.status(400).json({ message: 'Profile image is required' });
     }
 
-    const imageUrl = `/api/images/${req.file.filename}`;
+    const base64Image = req.file.buffer.toString('base64');
+    const imageUrl = `data:${req.file.mimetype};base64,${base64Image}`;
 
     const newMaster = new Master({
       name,
@@ -52,12 +53,13 @@ router.post('/', protect, upload.single('image'), encryptUpload, async (req, res
     const savedMaster = await newMaster.save();
     res.status(201).json(savedMaster);
   } catch (error) {
+    console.error('Error creating master:', error);
     res.status(500).json({ message: 'Error creating master', error: error.message });
   }
 });
 
 // PUT update master (Protected)
-router.put('/:id', protect, upload.single('image'), encryptUpload, async (req, res) => {
+router.put('/:id', protect, upload.single('image'), async (req, res) => {
   try {
     const { name, designation, dan, experience, bio } = req.body;
     const master = await Master.findById(req.params.id);
@@ -68,15 +70,8 @@ router.put('/:id', protect, upload.single('image'), encryptUpload, async (req, r
 
     let imageUrl = master.imageUrl;
     if (req.file) {
-      // Delete old encrypted image file
-      if (master.imageUrl && master.imageUrl.startsWith('/api/images/')) {
-        const oldFilename = master.imageUrl.split('/').pop();
-        const oldPath = path.join(__dirname, '../uploads', oldFilename);
-        if (fs.existsSync(oldPath)) {
-          fs.unlinkSync(oldPath);
-        }
-      }
-      imageUrl = `/api/images/${req.file.filename}`;
+      const base64Image = req.file.buffer.toString('base64');
+      imageUrl = `data:${req.file.mimetype};base64,${base64Image}`;
     }
 
     master.name = name || master.name;
@@ -89,6 +84,7 @@ router.put('/:id', protect, upload.single('image'), encryptUpload, async (req, r
     const updatedMaster = await master.save();
     res.json(updatedMaster);
   } catch (error) {
+    console.error('Error updating master:', error);
     res.status(500).json({ message: 'Error updating master', error: error.message });
   }
 });
@@ -101,7 +97,7 @@ router.delete('/:id', protect, async (req, res) => {
       return res.status(404).json({ message: 'Master not found' });
     }
 
-    // Delete image file if it exists
+    // Delete image file if it exists locally
     if (master.imageUrl && master.imageUrl.startsWith('/api/images/')) {
       const filename = master.imageUrl.split('/').pop();
       const imgPath = path.join(__dirname, '../uploads', filename);
@@ -113,6 +109,7 @@ router.delete('/:id', protect, async (req, res) => {
     await Master.findByIdAndDelete(req.params.id);
     res.json({ message: 'Master deleted successfully' });
   } catch (error) {
+    console.error('Error deleting master:', error);
     res.status(500).json({ message: 'Error deleting master', error: error.message });
   }
 });

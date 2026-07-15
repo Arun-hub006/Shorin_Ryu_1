@@ -376,7 +376,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (type === 'dojos') fetchDojosData();
       } else {
         const errorData = await response.json();
-        alert(`Error saving ${type}: ` + (errorData.message || 'Server error'));
+        alert(`Error saving ${type}: ` + (errorData.error || errorData.message || 'Server error'));
       }
     } catch (error) {
       console.error(`Submit error for ${type}:`, error);
