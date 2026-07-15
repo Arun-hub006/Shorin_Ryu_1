@@ -6,7 +6,12 @@ const { decryptBuffer } = require('../utils/crypto');
 
 router.get('/:filename', (req, res) => {
   const { filename } = req.params;
-  const filepath = path.join(__dirname, '../uploads', filename);
+  let filepath = path.join(__dirname, '../uploads', filename);
+
+  // Fallback to /tmp in production / serverless environments
+  if (!fs.existsSync(filepath)) {
+    filepath = path.join('/tmp', filename);
+  }
 
   // Check if file exists
   if (!fs.existsSync(filepath)) {

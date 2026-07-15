@@ -4,7 +4,9 @@ const fs = require('fs');
 const { encryptBuffer } = require('../utils/crypto');
 
 // Create uploads folder outside of the public directory for security
-const uploadDir = path.join(__dirname, '../uploads');
+const uploadDir = process.env.NODE_ENV === 'production'
+  ? '/tmp'
+  : path.join(__dirname, '../uploads');
 
 // Ensure directory exists
 if (!fs.existsSync(uploadDir)) {
