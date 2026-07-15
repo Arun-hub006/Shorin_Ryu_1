@@ -1,0 +1,16 @@
+{
+  "name": "shorin-ryu-karate",
+  "version": "1.0.0",
+  "description": "Premium Karate Website with MongoDB CMS",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.9.5",
+    "multer": "^1.4.5-lts.1"
+  }
+}
