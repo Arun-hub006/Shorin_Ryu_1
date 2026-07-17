@@ -173,10 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
       title = 'Registrations Management';
       breadcrumb = 'Dashboard > Registrations';
       fetchRegistrationsData();
-    } else if (tabName === 'profile') {
-      title = 'Admin Profile';
-      breadcrumb = 'Dashboard > Profile';
-    }
+
 
     pageTitle.textContent = title;
     pageBreadcrumbs.innerHTML = breadcrumb;
