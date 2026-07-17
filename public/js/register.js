@@ -21,12 +21,12 @@ document.addEventListener('DOMContentLoaded', () => {
       dojosList = await response.json();
 
       if (dojosList.length === 0) {
-        dojoSelect.innerHTML = '<option value="" disabled>No branches available</option>';
+        dojoSelect.innerHTML = '<option value="">None / General Inquiry (No branches available)</option>';
         return;
       }
 
       // Populate select option dropdown
-      dojoSelect.innerHTML = '<option value="" disabled selected>Select dojo branch</option>' + 
+      dojoSelect.innerHTML = '<option value="">None / General Inquiry</option>' + 
         dojosList.map(dojo => `<option value="${dojo._id}">${dojo.name}</option>`).join('');
 
       // Trigger geolocation logic to check closest branch
@@ -122,13 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const phone = document.getElementById('phone').value;
     const age = document.getElementById('age').value;
     const experience = document.getElementById('experience').value;
-    const selectedDojo = dojoSelect.value;
-
-    if (!selectedDojo) {
-      alertError.style.display = 'block';
-      errorMessage.textContent = 'Please select a Dojo branch.';
-      return;
-    }
+    const selectedDojo = dojoSelect.value || undefined;
 
     try {
       const response = await fetch('/api/registrations', {

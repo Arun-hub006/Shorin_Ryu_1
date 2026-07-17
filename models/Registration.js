@@ -36,8 +36,7 @@ const RegistrationSchema = new mongoose.Schema({
   },
   selectedDojo: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Dojo',
-    required: true
+    ref: 'Dojo'
   },
   status: {
     type: String,

@@ -31,14 +31,16 @@ router.post('/', async (req, res) => {
   try {
     const { name, email, phone, age, experience, selectedDojo } = req.body;
 
-    if (!name || !email || !phone || !age || !experience || !selectedDojo) {
+    if (!name || !email || !phone || !age || !experience) {
       return res.status(400).json({ message: 'All registration fields are required' });
     }
 
-    // Verify dojo exists
-    const dojo = await Dojo.findById(selectedDojo);
-    if (!dojo) {
-      return res.status(404).json({ message: 'Selected Dojo location not found' });
+    if (selectedDojo) {
+      // Verify dojo exists
+      const dojo = await Dojo.findById(selectedDojo);
+      if (!dojo) {
+        return res.status(404).json({ message: 'Selected Dojo location not found' });
+      }
     }
 
     const newRegistration = new Registration({
@@ -47,7 +49,7 @@ router.post('/', async (req, res) => {
       phone,
       age: parseInt(age),
       experience,
-      selectedDojo,
+      selectedDojo: selectedDojo || undefined,
       status: 'unread'
     });
 
