@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
       title = 'Registrations Management';
       breadcrumb = 'Dashboard > Registrations';
       fetchRegistrationsData();
-
+    }
 
     pageTitle.textContent = title;
     pageBreadcrumbs.innerHTML = breadcrumb;
