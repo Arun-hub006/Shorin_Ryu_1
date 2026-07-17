@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Dojo = require('../models/Dojo');
 const { protect } = require('../middleware/auth');
-const { upload, encryptUpload } = require('../middleware/upload');
+const { upload, encryptUpload, processImage } = require('../middleware/upload');
 const fs = require('fs');
 const path = require('path');
 
@@ -45,7 +45,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST new dojo location (Protected)
-router.post('/', protect, upload.single('image'), async (req, res) => {
+router.post('/', protect, upload.single('image'), processImage, async (req, res) => {
   try {
     const { name, address, phone, mapUrl, description, latitude, longitude } = req.body;
     
@@ -88,7 +88,7 @@ router.post('/', protect, upload.single('image'), async (req, res) => {
 });
 
 // PUT update dojo location (Protected)
-router.put('/:id', protect, upload.single('image'), async (req, res) => {
+router.put('/:id', protect, upload.single('image'), processImage, async (req, res) => {
   try {
     const { name, address, phone, mapUrl, description, latitude, longitude } = req.body;
     const dojo = await Dojo.findById(req.params.id);

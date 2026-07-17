@@ -1,4 +1,6 @@
 const multer = require('multer');
+const sharp = require('sharp');
+const { MAX_DIMENSION, TARGET_SIZE_KB, QUALITY_RANGE } = require('../config/imageConfig');
 const path = require('path');
 const fs = require('fs');
 const { encryptBuffer } = require('../utils/crypto');
@@ -32,6 +34,24 @@ const upload = multer({
   fileFilter: fileFilter
 });
 
+// Process image: resize, compress, focus on face area
+const processImage = async (req, res, next) => {
+  if (!req.file) return next();
+  try {
+    const maxDim = MAX_DIMENSION || 800;
+    const quality = QUALITY_RANGE?.max || 80;
+    const processed = await sharp(req.file.buffer)
+      .rotate()
+      .resize({ width: maxDim, height: maxDim, fit: 'inside', position: 'entropy' })
+      .jpeg({ quality, mozjpeg: true })
+      .toBuffer();
+    req.file.buffer = processed;
+    next();
+  } catch (err) {
+    next(err);
+  }
+};
+
 // Custom middleware to encrypt upload and write to secure directory
 const encryptUpload = (req, res, next) => {
   if (!req.file) {
@@ -61,5 +81,6 @@ const encryptUpload = (req, res, next) => {
 
 module.exports = {
   upload,
-  encryptUpload
+  encryptUpload,
+  processImage
 };

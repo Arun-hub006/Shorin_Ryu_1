@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const BlackBelt = require('../models/BlackBelt');
 const { protect } = require('../middleware/auth');
-const { upload, encryptUpload } = require('../middleware/upload');
+const { upload, encryptUpload, processImage } = require('../middleware/upload');
 const fs = require('fs');
 const path = require('path');
 
@@ -30,7 +30,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST new black belt (Protected)
-router.post('/', protect, upload.single('image'), async (req, res) => {
+router.post('/', protect, upload.single('image'), processImage, async (req, res) => {
   try {
     const { name, dan, specialization, experience, bio } = req.body;
     
@@ -59,7 +59,7 @@ router.post('/', protect, upload.single('image'), async (req, res) => {
 });
 
 // PUT update black belt (Protected)
-router.put('/:id', protect, upload.single('image'), async (req, res) => {
+router.put('/:id', protect, upload.single('image'), processImage, async (req, res) => {
   try {
     const { name, dan, specialization, experience, bio } = req.body;
     const blackbelt = await BlackBelt.findById(req.params.id);
