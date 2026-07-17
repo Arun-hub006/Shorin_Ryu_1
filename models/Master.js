@@ -47,4 +47,7 @@ const MasterSchema = new mongoose.Schema({
   toObject: { getters: true }
 });
 
+// Index for query performance optimization
+MasterSchema.index({ createdAt: -1 });
+
 module.exports = mongoose.model('Master', MasterSchema);

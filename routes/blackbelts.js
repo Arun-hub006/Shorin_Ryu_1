@@ -10,6 +10,7 @@ const path = require('path');
 router.get('/', async (req, res) => {
   try {
     const blackbelts = await BlackBelt.find().sort({ createdAt: -1 });
+    res.set('Cache-Control', 'public, max-age=60, s-maxage=120, stale-while-revalidate=60');
     res.json(blackbelts);
   } catch (error) {
     res.status(500).json({ message: 'Error retrieving black belts', error: error.message });
@@ -23,6 +24,7 @@ router.get('/:id', async (req, res) => {
     if (!blackbelt) {
       return res.status(404).json({ message: 'Black belt not found' });
     }
+    res.set('Cache-Control', 'public, max-age=60, s-maxage=120, stale-while-revalidate=60');
     res.json(blackbelt);
   } catch (error) {
     res.status(500).json({ message: 'Error retrieving black belt details', error: error.message });

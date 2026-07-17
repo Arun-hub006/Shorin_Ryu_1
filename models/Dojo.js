@@ -55,4 +55,7 @@ const DojoSchema = new mongoose.Schema({
   toObject: { getters: true }
 });
 
+// Index for query performance optimization
+DojoSchema.index({ createdAt: 1 });
+
 module.exports = mongoose.model('Dojo', DojoSchema);

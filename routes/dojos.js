@@ -25,6 +25,7 @@ const extractCoords = (url) => {
 router.get('/', async (req, res) => {
   try {
     const dojos = await Dojo.find().sort({ createdAt: 1 });
+    res.set('Cache-Control', 'public, max-age=60, s-maxage=120, stale-while-revalidate=60');
     res.json(dojos);
   } catch (error) {
     res.status(500).json({ message: 'Error retrieving dojo locations', error: error.message });
@@ -38,6 +39,7 @@ router.get('/:id', async (req, res) => {
     if (!dojo) {
       return res.status(404).json({ message: 'Dojo location not found' });
     }
+    res.set('Cache-Control', 'public, max-age=60, s-maxage=120, stale-while-revalidate=60');
     res.json(dojo);
   } catch (error) {
     res.status(500).json({ message: 'Error retrieving dojo details', error: error.message });

@@ -10,6 +10,7 @@ const path = require('path');
 router.get('/', async (req, res) => {
   try {
     const masters = await Master.find().sort({ createdAt: -1 });
+    res.set('Cache-Control', 'public, max-age=60, s-maxage=120, stale-while-revalidate=60');
     res.json(masters);
   } catch (error) {
     res.status(500).json({ message: 'Error retrieving masters', error: error.message });
@@ -23,6 +24,7 @@ router.get('/:id', async (req, res) => {
     if (!master) {
       return res.status(404).json({ message: 'Master not found' });
     }
+    res.set('Cache-Control', 'public, max-age=60, s-maxage=120, stale-while-revalidate=60');
     res.json(master);
   } catch (error) {
     res.status(500).json({ message: 'Error retrieving master details', error: error.message });

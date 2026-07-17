@@ -50,4 +50,8 @@ const RegistrationSchema = new mongoose.Schema({
   toObject: { getters: true }
 });
 
+// Indexes for query performance optimization
+RegistrationSchema.index({ createdAt: -1 });
+RegistrationSchema.index({ status: 1 });
+
 module.exports = mongoose.model('Registration', RegistrationSchema);

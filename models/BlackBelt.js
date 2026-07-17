@@ -47,4 +47,7 @@ const BlackBeltSchema = new mongoose.Schema({
   toObject: { getters: true }
 });
 
+// Index for query performance optimization
+BlackBeltSchema.index({ createdAt: -1 });
+
 module.exports = mongoose.model('BlackBelt', BlackBeltSchema);
