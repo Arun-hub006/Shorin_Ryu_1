@@ -34,18 +34,57 @@ const upload = multer({
   fileFilter: fileFilter
 });
 
-// Process image: resize, compress, focus on face area
+// Process image: resize, compress dynamically to target 100 - 150 KB with high face clarity
 const processImage = async (req, res, next) => {
   if (!req.file) return next();
   try {
-    const maxDim = MAX_DIMENSION || 800;
-    const quality = QUALITY_RANGE?.max || 80;
-    const processed = await sharp(req.file.buffer)
-      .rotate()
-      .resize({ width: maxDim, height: maxDim, fit: 'inside', position: 'entropy' })
-      .jpeg({ quality, mozjpeg: true })
-      .toBuffer();
-    req.file.buffer = processed;
+    const targetMinBytes = 100 * 1024; // 100 KB
+    const targetMaxBytes = 150 * 1024; // 150 KB
+
+    let currentQuality = 80;
+    let currentDim = MAX_DIMENSION || 800;
+    let attempts = 0;
+    let processedBuffer = null;
+
+    // Iteratively adjust quality/dimensions to target the 100 - 150 KB range
+    while (attempts < 5) {
+      processedBuffer = await sharp(req.file.buffer)
+        .rotate()
+        .resize({ 
+          width: currentDim, 
+          height: currentDim, 
+          fit: 'inside', 
+          position: 'entropy' 
+        })
+        .jpeg({ quality: currentQuality, mozjpeg: true })
+        .toBuffer();
+
+      const size = processedBuffer.length;
+
+      if (size >= targetMinBytes && size <= targetMaxBytes) {
+        break; // Falls in the 100-150 KB range
+      }
+
+      if (size > targetMaxBytes) {
+        if (currentQuality > 60) {
+          currentQuality = Math.max(60, currentQuality - 10);
+        } else {
+          currentDim = Math.max(400, Math.round(currentDim * 0.8));
+        }
+      } else {
+        if (currentQuality < 95) {
+          currentQuality = Math.min(95, currentQuality + 5);
+        } else if (currentDim < 1200) {
+          currentDim = Math.min(1200, Math.round(currentDim * 1.2));
+        } else {
+          break; // Quality and dimensions are maxed out
+        }
+      }
+      attempts++;
+    }
+
+    req.file.buffer = processedBuffer;
+    req.file.mimetype = 'image/jpeg';
     next();
   } catch (err) {
     next(err);
