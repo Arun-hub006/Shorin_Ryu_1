@@ -38,10 +38,6 @@ const DojoSchema = new mongoose.Schema({
     type: Number,
     required: false
   },
-  imageUrl: {
-    type: String,
-    required: true
-  },
   description: {
     type: String,
     required: true,

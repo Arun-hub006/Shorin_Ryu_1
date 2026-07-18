@@ -195,7 +195,6 @@ document.addEventListener('DOMContentLoaded', () => {
       // Render dojo list
       dojosListContainer.innerHTML = dojos.map((dojo, index) => `
         <div class="dojo-item ${index === 0 ? 'active' : ''}" data-id="${dojo._id}" data-mapurl="${dojo.mapUrl}" data-address="${dojo.address}">
-          <img src="${dojo.imageUrl}" alt="${dojo.name}" class="dojo-img">
           <div class="dojo-details">
             <h4 class="dojo-title">${dojo.name}</h4>
             <div class="dojo-info-row">

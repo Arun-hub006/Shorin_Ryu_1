@@ -206,7 +206,6 @@ document.addEventListener('DOMContentLoaded', () => {
       // Set default image previews
       if (type === 'masters') document.getElementById('master-image-preview').src = '/assets/sensei_male_1.png';
       if (type === 'blackbelts') document.getElementById('bb-image-preview').src = '/assets/sensei_male_1.png';
-      if (type === 'dojos') document.getElementById('dojo-image-preview').src = '/assets/dojo_downtown.png';
 
       titleEl.textContent = `Add ${type === 'dojos' ? 'Dojo Location' : type === 'blackbelts' ? 'Black Belt' : 'Master'}`;
       subtitleEl.textContent = 'Create details for a new entry.';
@@ -231,8 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function setupImagePreviewListeners() {
     const previewConfigs = [
       { inputId: 'master-image-input', previewId: 'master-image-preview' },
-      { inputId: 'bb-image-input', previewId: 'bb-image-preview' },
-      { inputId: 'dojo-image-input', previewId: 'dojo-image-preview' }
+      { inputId: 'bb-image-input', previewId: 'bb-image-preview' }
     ];
 
     previewConfigs.forEach(config => {
@@ -284,7 +282,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('dojo-mapurl').value = data.mapUrl;
         document.getElementById('dojo-lat').value = data.latitude || '';
         document.getElementById('dojo-lng').value = data.longitude || '';
-        document.getElementById('dojo-image-preview').src = data.imageUrl;
         document.getElementById('dojo-desc').value = data.description;
       }
     } catch (err) {
@@ -338,7 +335,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('form-dojos').addEventListener('submit', async (e) => {
       e.preventDefault();
       const id = document.getElementById('dojo-id').value;
-      const fileInput = document.getElementById('dojo-image-input');
 
       const formData = new FormData();
       formData.append('name', document.getElementById('dojo-name').value);
@@ -348,10 +344,6 @@ document.addEventListener('DOMContentLoaded', () => {
       formData.append('latitude', document.getElementById('dojo-lat').value);
       formData.append('longitude', document.getElementById('dojo-lng').value);
       formData.append('description', document.getElementById('dojo-desc').value);
-
-      if (fileInput.files[0]) {
-        formData.append('image', fileInput.files[0]);
-      }
 
       submitForm('dojos', id, formData);
     });
@@ -448,7 +440,6 @@ document.addEventListener('DOMContentLoaded', () => {
       } else if (type === 'dojos') {
         modalBodyContent.innerHTML = `
           <div class="detail-profile-row">
-            <img src="${data.imageUrl}" alt="${data.name}" class="detail-img" style="width: 150px; height: 100px;">
             <div class="detail-fields">
               <span class="detail-name">${data.name}</span>
               <span class="detail-meta"><strong>Phone:</strong> ${data.phone}</span>
@@ -613,7 +604,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (tbody) {
         tbody.innerHTML = data.map(d => `
           <tr data-name="${d.name.toLowerCase()}">
-            <td><img src="${d.imageUrl}" class="table-avatar" alt="${d.name}" style="height: 35px; width: 50px; object-fit: cover;"></td>
             <td><strong>${d.name}</strong></td>
             <td>${d.address}</td>
             <td>${d.phone}</td>

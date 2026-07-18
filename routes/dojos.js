@@ -47,17 +47,10 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST new dojo location (Protected)
-router.post('/', protect, upload.single('image'), processImage, async (req, res) => {
+router.post('/', protect, upload.none(), async (req, res) => {
   try {
     const { name, address, phone, mapUrl, description, latitude, longitude } = req.body;
     
-    if (!req.file) {
-      return res.status(400).json({ message: 'Dojo image is required' });
-    }
-
-    const base64Image = req.file.buffer.toString('base64');
-    const imageUrl = `data:${req.file.mimetype};base64,${base64Image}`;
-
     // Compute coords if not explicitly provided
     let finalLat = latitude ? parseFloat(latitude) : null;
     let finalLng = longitude ? parseFloat(longitude) : null;
@@ -77,7 +70,6 @@ router.post('/', protect, upload.single('image'), processImage, async (req, res)
       mapUrl,
       latitude: finalLat,
       longitude: finalLng,
-      imageUrl,
       description
     });
 
@@ -90,19 +82,13 @@ router.post('/', protect, upload.single('image'), processImage, async (req, res)
 });
 
 // PUT update dojo location (Protected)
-router.put('/:id', protect, upload.single('image'), processImage, async (req, res) => {
+router.put('/:id', protect, upload.none(), async (req, res) => {
   try {
     const { name, address, phone, mapUrl, description, latitude, longitude } = req.body;
     const dojo = await Dojo.findById(req.params.id);
 
     if (!dojo) {
       return res.status(404).json({ message: 'Dojo location not found' });
-    }
-
-    let imageUrl = dojo.imageUrl;
-    if (req.file) {
-      const base64Image = req.file.buffer.toString('base64');
-      imageUrl = `data:${req.file.mimetype};base64,${base64Image}`;
     }
 
     // Compute coords if not explicitly provided or mapUrl has changed
@@ -122,7 +108,6 @@ router.put('/:id', protect, upload.single('image'), processImage, async (req, re
     dojo.phone = phone || dojo.phone;
     dojo.mapUrl = mapUrl || dojo.mapUrl;
     dojo.description = description || dojo.description;
-    dojo.imageUrl = imageUrl;
     
     if (finalLat !== null && !isNaN(finalLat)) dojo.latitude = finalLat;
     if (finalLng !== null && !isNaN(finalLng)) dojo.longitude = finalLng;
@@ -141,15 +126,6 @@ router.delete('/:id', protect, async (req, res) => {
     const dojo = await Dojo.findById(req.params.id);
     if (!dojo) {
       return res.status(404).json({ message: 'Dojo location not found' });
-    }
-
-    // Delete image file if it exists locally
-    if (dojo.imageUrl && dojo.imageUrl.startsWith('/api/images/')) {
-      const filename = dojo.imageUrl.split('/').pop();
-      const imgPath = path.join(__dirname, '../uploads', filename);
-      if (fs.existsSync(imgPath)) {
-        fs.unlinkSync(imgPath);
-      }
     }
 
     await Dojo.findByIdAndDelete(req.params.id);

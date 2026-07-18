@@ -150,7 +150,6 @@ app.post('/api/seed', async (req, res) => {
         mapUrl: 'https://maps.google.com/?q=12.9716,80.2348',
         latitude: 12.9716,
         longitude: 80.2348,
-        imageUrl: '/assets/dojo_downtown.png',
         description: 'Our Downtown dojo is equipped with world-class training facilities and experienced instructors to help you achieve your best.'
       },
       {
@@ -160,7 +159,6 @@ app.post('/api/seed', async (req, res) => {
         mapUrl: 'https://maps.google.com/?q=13.0843,80.2098',
         latitude: 13.0843,
         longitude: 80.2098,
-        imageUrl: '/assets/dojo_eastside.png',
         description: 'Our East Side branch features spacious wooden flooring, heavy bags, and a specialized children training zone.'
       },
       {
@@ -170,7 +168,6 @@ app.post('/api/seed', async (req, res) => {
         mapUrl: 'https://maps.google.com/?q=12.9352,80.2210',
         latitude: 12.9352,
         longitude: 80.2210,
-        imageUrl: '/assets/dojo_westside.png',
         description: 'Located in the heart of Velachery, this facility offers weekend martial arts programs and high-performance training seminars.'
       }
     ]);
