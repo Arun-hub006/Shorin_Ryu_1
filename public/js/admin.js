@@ -39,13 +39,83 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Lockout constants & state
+  const FAILED_ATTEMPTS_KEY = 'admin_failed_attempts';
+  const LOCKOUT_UNTIL_KEY = 'admin_lockout_until';
+  let lockoutInterval = null;
+
   // --- INITIAL CHECK & SETUP ---
+  checkLockoutState();
   showLogin();
   setupTabRouting();
   setupFormListeners();
   setupImagePreviewListeners();
 
   // --- AUTHENTICATION ---
+  function checkLockoutState() {
+    const lockoutUntil = localStorage.getItem(LOCKOUT_UNTIL_KEY);
+    if (!lockoutUntil) return false;
+
+    const now = Date.now();
+    const remainingTimeMs = parseInt(lockoutUntil, 10) - now;
+
+    if (remainingTimeMs > 0) {
+      startLockout(Math.ceil(remainingTimeMs / 1000));
+      return true;
+    } else {
+      clearLockoutState();
+      return false;
+    }
+  }
+
+  function startLockout(secondsRemaining) {
+    if (lockoutInterval) clearInterval(lockoutInterval);
+
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const submitBtn = loginForm.querySelector('button[type="submit"]');
+
+    if (usernameInput) usernameInput.disabled = true;
+    if (passwordInput) passwordInput.disabled = true;
+    if (submitBtn) submitBtn.disabled = true;
+
+    loginError.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Too many failed attempts. Please wait <span id="lockout-countdown">${secondsRemaining}</span>s before trying again.`;
+    loginError.style.display = 'block';
+
+    let timeLeft = secondsRemaining;
+    lockoutInterval = setInterval(() => {
+      timeLeft--;
+      if (timeLeft <= 0) {
+        clearInterval(lockoutInterval);
+        clearLockoutState();
+      } else {
+        const countdownEl = document.getElementById('lockout-countdown');
+        if (countdownEl) {
+          countdownEl.textContent = timeLeft;
+        }
+      }
+    }, 1000);
+  }
+
+  function clearLockoutState() {
+    if (lockoutInterval) {
+      clearInterval(lockoutInterval);
+      lockoutInterval = null;
+    }
+    localStorage.removeItem(FAILED_ATTEMPTS_KEY);
+    localStorage.removeItem(LOCKOUT_UNTIL_KEY);
+
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const submitBtn = loginForm.querySelector('button[type="submit"]');
+
+    if (usernameInput) usernameInput.disabled = false;
+    if (passwordInput) passwordInput.disabled = false;
+    if (submitBtn) submitBtn.disabled = false;
+
+    loginError.style.display = 'none';
+  }
+
   async function checkAuth() {
     try {
       const res = await fetch('/api/auth/check');
@@ -64,6 +134,10 @@ document.addEventListener('DOMContentLoaded', () => {
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     loginError.style.display = 'none';
+
+    if (checkLockoutState()) {
+      return;
+    }
     
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
@@ -77,11 +151,23 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await res.json();
 
       if (res.ok && data.success) {
+        localStorage.removeItem(FAILED_ATTEMPTS_KEY);
+        localStorage.removeItem(LOCKOUT_UNTIL_KEY);
         showDashboard();
         loginForm.reset();
       } else {
-        loginError.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${data.message || 'Invalid admin credentials!'}`;
-        loginError.style.display = 'block';
+        let attempts = parseInt(localStorage.getItem(FAILED_ATTEMPTS_KEY) || '0', 10);
+        attempts++;
+        localStorage.setItem(FAILED_ATTEMPTS_KEY, attempts.toString());
+
+        if (attempts >= 3) {
+          const lockoutUntil = Date.now() + 60 * 1000;
+          localStorage.setItem(LOCKOUT_UNTIL_KEY, lockoutUntil.toString());
+          startLockout(60);
+        } else {
+          loginError.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${data.message || 'Invalid admin credentials!'} (${attempts}/3 attempts)`;
+          loginError.style.display = 'block';
+        }
       }
     } catch (err) {
       console.error('Login error:', err);
