@@ -38,8 +38,10 @@ const upload = multer({
 const processImage = async (req, res, next) => {
   if (!req.file) return next();
   try {
-    const targetMinBytes = 100 * 1024; // 100 KB
-    const targetMaxBytes = 150 * 1024; // 150 KB
+    // 75 KB binary converts to ~100 KB Base64 text in database
+    // 112.5 KB binary converts to ~150 KB Base64 text in database
+    const targetMinBytes = 75 * 1024; 
+    const targetMaxBytes = 112.5 * 1024; 
 
     let currentQuality = 80;
     let currentDim = MAX_DIMENSION || 800;
@@ -50,11 +52,11 @@ const processImage = async (req, res, next) => {
     while (attempts < 5) {
       processedBuffer = await sharp(req.file.buffer)
         .rotate()
-        .resize({ 
-          width: currentDim, 
-          height: currentDim, 
-          fit: 'inside', 
-          position: 'entropy' 
+        .resize({
+          width: currentDim,
+          height: currentDim,
+          fit: 'inside',
+          position: 'entropy'
         })
         .jpeg({ quality: currentQuality, mozjpeg: true })
         .toBuffer();
